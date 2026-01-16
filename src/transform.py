@@ -1,5 +1,5 @@
 from pathlib import Path
-import pandas as pd
+import pandas as pd 
 
 RAW_PATH = Path("data/raw/raw_c19.csv")
 OUT_PATH = Path("data/processed/processed_c19.csv")
@@ -16,6 +16,10 @@ def transform():
     df["Date"] = pd.to_datetime(df["Date"])
     df["DayOfWeek"] = df["Date"].dt.dayofweek
     df["Lag7_NewConfirmed"] = df["NewConfirmed"].shift(7).fillna(0)
+
+    # modelling frame (next-day prediction)
+    df["Lag1_NewConfirmed"] = df["NewConfirmed"].shift(1).fillna(0)
+    df["TargetNext_NewConfirmed"] = df["NewConfirmed"].shift(-1)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUT_PATH, index=False)
